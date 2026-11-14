@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MedAssist AI – Preview</title>
+<style>
+:root{--bg:#f4f8fd;--card:#fff;--tx:#1e293b;--mut:#64748b;--bd:#e2e8f0;--b:#1d4ed8;--bl:#eff6ff;--t:#0d9488;--tl:#f0fdfa;--am:#fef3c7;--amt:#92400e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0b1220;--card:#131c2e;--tx:#e2e8f0;--mut:#94a3b8;--bd:#24304a;--bl:#172554;--tl:#0f2f2c;--am:#3b2f10;--amt:#fcd34d}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0b1220;--card:#131c2e;--tx:#e2e8f0;--mut:#94a3b8;--bd:#24304a;--bl:#172554;--tl:#0f2f2c;--am:#3b2f10;--amt:#fcd34d}
+*{box-sizing:border-box}html,body{margin:0}body{background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+a{color:var(--b);text-decoration:none;cursor:pointer}
+.bar{background:var(--amt);color:var(--am);padding:6px 12px;font-size:12px;text-align:center}
+.top{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:var(--card);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:5;flex-wrap:wrap;gap:8px}
+.logo{font-weight:800;font-size:18px;display:flex;gap:8px;align-items:center;cursor:pointer}.logo i{width:30px;height:30px;border-radius:8px;background:var(--b);color:#5eead4;display:grid;place-items:center;font-style:normal;font-weight:900}.logo span{color:var(--t)}
+.btn{border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:9px 16px;border-radius:12px;font-weight:600;cursor:pointer;font-size:14px}
+.btn.p{background:var(--b);border-color:var(--b);color:#fff}.btn.t{background:var(--t);border-color:var(--t);color:#fff}.btn.r{color:#dc2626}
+.wrap{max-width:1100px;margin:0 auto;padding:20px}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center;padding:40px 0}
+@media(max-width:760px){.hero{grid-template-columns:1fr}}
+h1{font-size:clamp(30px,5vw,48px);line-height:1.1;margin:10px 0}h1 b{color:var(--b)}h2{margin:0 0 6px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:18px;box-shadow:0 2px 10px rgba(30,64,175,.06)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;background:var(--tl);color:var(--t)}.badge.w{background:var(--am);color:var(--amt)}.badge.g{background:var(--bd);color:var(--mut)}
+.ico{width:40px;height:40px;border-radius:12px;background:var(--bl);color:var(--b);display:grid;place-items:center;font-size:20px;margin-bottom:10px}
+.mut{color:var(--mut);font-size:14px}
+.box{max-width:440px;margin:30px auto}
+label{display:block;font-size:13px;font-weight:600;margin:12px 0 4px}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);font:inherit}
+.tabs{display:flex;gap:6px;background:var(--bd);padding:5px;border-radius:14px;margin:14px 0}.tabs button{flex:1;border:0;padding:9px;border-radius:10px;background:transparent;color:var(--mut);font-weight:600;cursor:pointer}.tabs button.on{background:var(--card);color:var(--b)}
+.dash{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 100px)}
+@media(max-width:760px){.dash{grid-template-columns:1fr}.side{display:flex;overflow-x:auto;border-right:0!important;border-bottom:1px solid var(--bd)}.side a{white-space:nowrap}}
+.side{background:var(--card);border-right:1px solid var(--bd);padding:12px}
+.side a{display:flex;justify-content:space-between;gap:8px;padding:10px 12px;border-radius:10px;color:var(--mut);font-weight:600;font-size:14px}.side a.on{background:var(--bl);color:var(--b)}
+.main{padding:22px}
+table{width:100%;border-collapse:collapse;font-size:14px}th{text-align:left;color:var(--mut);font-size:12px;text-transform:uppercase;padding:8px 6px;border-bottom:1px solid var(--bd)}td{padding:10px 6px;border-bottom:1px solid var(--bd)}
+.num{font-size:26px;font-weight:800;margin-top:6px}
+.toast{position:fixed;right:14px;top:14px;background:var(--card);border:1px solid var(--t);padding:10px 14px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.15);z-index:20}
+.err{color:#dc2626;font-size:12px}
+</style>
+</head>
+<body>
+<div class="bar">Preview mode – sample data only, nothing is saved. The real app connects to the Node + MongoDB backend.</div>
+<div id="app"></div>
+<script>
+var S={user:null,tab:"patient",toast:"",
+ hist:{conditions:"Hypertension",allergies:"Penicillin",meds:"Amlodipine 5mg",notes:""},
+ consent:{"Dr. Ravi Kumar":true,"Dr. Meera Nair":false},
+ users:[
+  {n:"Asha Rao",e:"asha@example.com",r:"patient",a:true,v:"-"},
+  {n:"Dr. Ravi Kumar",e:"ravi@example.com",r:"doctor",a:true,v:"approved"},
+  {n:"Dr. Meera Nair",e:"meera@example.com",r:"doctor",a:true,v:"pending"},
+  {n:"City Care Clinic",e:"clinic@example.com",r:"clinic",a:true,v:"pending"}]};
+var NAV={
+ patient:[["home","Dashboard"],["profile","My Profile"],["health","My Health Information"],["history","Medical History"],["s1","Symptom Submission","Soon"],["s2","AI Health Assessment","Soon"],["s3","Consultation History","Soon"],["settings","Settings"]],
+ doctor:[["home","Dashboard"],["profile","Professional Profile"],["patients","Authorized Patients"],["s1","Patient Assessments","Soon"],["s2","Consultations","Soon"],["verify","Verification Status"],["settings","Settings"]],
+ clinic:[["home","Clinic Overview"],["profile","Clinic Profile"],["docs","Doctor Management"],["s1","Patient Management","Soon"],["settings","Settings"]],
+ admin:[["home","Overview"],["users","Manage Users"],["verify","Verify Doctors & Clinics"],["roles","Manage Roles"],["log","Platform Activity"],["settings","Settings"]]};
+function $(h){return h}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function say(m){S.toast=m;draw();setTimeout(function(){S.toast="";draw()},2200)}
+function nav(h){location.hash=h}
+function topbar(){
+ return '<div class="top"><div class="logo" onclick="nav(\'home\')"><i>+</i>MedAssist <span>AI</span></div><div>'+
+ (S.user?'<span class="mut">'+esc(S.user.n)+' ('+S.user.r+')</span> <button class="btn r" onclick="logout()">Logout</button>':
+ '<button class="btn" onclick="nav(\'login\')">Login</button> <button class="btn p" onclick="nav(\'register\')">Get Started</button>')+'</div></div>'}
+function home(){
+ var f=[["🩺","Smart Symptom Analysis","Upcoming"],["🧠","AI-Assisted Disease Prediction","Upcoming"],["🤝","Doctor-Patient Collaboration",""],["📁","Digital Health Records",""],["🕘","Medical History Tracking",""],["🔒","Secure Healthcare Management",""]];
+ var st=[["Register and create your account","📝"],["Connect with healthcare professionals","👩‍⚕️"],["Manage your health information","📋"]];
+ return topbar()+'<div class="wrap"><div class="hero"><div><span class="badge">Smart India Hackathon Project</span><h1>Your Health, <b>Our Intelligence.</b></h1><p class="mut" style="font-size:17px">Empowering better healthcare through intelligent symptom analysis, digital consultations, and connected patient care.</p><p><button class="btn p" onclick="nav(\'register\')">Get Started</button> <button class="btn" onclick="document.getElementById(\'feat\').scrollIntoView({behavior:\'smooth\'})">Explore Platform</button></p></div>'+
+ '<div class="card"><div class="logo"><i>+</i>MedAssist Dashboard</div><svg viewBox="0 0 300 70" width="100%"><path d="M0 40h70l12-28 20 56 18-44 12 16h168" fill="none" stroke="#14b8a6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="grid" style="grid-template-columns:1fr 1fr"><div class="card">👥<br><b>Doctors &amp; Patients</b></div><div class="card">📁<br><b>Health Records</b></div><div class="card">🩺<br><b>Symptoms</b><br><span class="badge g">Upcoming</span></div><div class="card">🧠<br><b>AI Assessment</b><br><span class="badge g">Upcoming</span></div></div></div></div>'+
+ '<h2 id="feat" style="text-align:center">Platform Features</h2><div class="grid">'+f.map(function(x){return '<div class="card"><div class="ico">'+x[0]+'</div>'+(x[2]?'<span class="badge w" style="float:right">Upcoming</span>':'')+'<b>'+x[1]+'</b></div>'}).join('')+'</div>'+
+ '<h2 style="text-align:center;margin-top:36px">How It Works</h2><div class="grid">'+st.map(function(x,i){return '<div class="card" style="text-align:center"><div class="ico" style="margin:0 auto 10px">'+x[1]+'</div><span class="mut">Step '+(i+1)+'</span><br><b>'+x[0]+'</b></div>'}).join('')+'</div>'+
+ '<p class="mut" style="text-align:center;margin-top:40px">© 2026 MedAssist AI · Privacy Policy · Terms and Conditions · contact@medassist.ai</p></div>'}
+function login(){
+ return topbar()+'<div class="box card"><h2>Welcome back</h2><p class="mut">Log in, or jump straight into a role preview.</p>'+
+ '<label>Email Address</label><input id="em" type="email" placeholder="you@example.com"><label>Password</label><input id="pw" type="password"><p class="mut"><label style="display:inline"><input type="checkbox" style="width:auto"> Remember me</label> · <a>Forgot password?</a></p>'+
+ '<button class="btn p" style="width:100%" onclick="say(\'Preview only – use a role button below\')">Login</button><hr style="border:0;border-top:1px solid var(--bd);margin:18px 0"><b style="font-size:13px">Preview as:</b><div class="grid" style="grid-template-columns:1fr 1fr;margin-top:8px">'+
+ ['patient','doctor','clinic','admin'].map(function(r){return '<button class="btn" onclick="enter(\''+r+'\')">'+r[0].toUpperCase()+r.slice(1)+'</button>'}).join('')+'</div></div>'}
+function reg(){
+ var t=S.tab,p=t=="patient",d=t=="doctor",c=t=="clinic";
+ return topbar()+'<div class="box card" style="max-width:560px"><h2>Create your account</h2><div class="tabs">'+['patient','doctor','clinic'].map(function(r){return '<button class="'+(t==r?'on':'')+'" onclick="S.tab=\''+r+'\';draw()">'+r[0].toUpperCase()+r.slice(1)+'</button>'}).join('')+'</div>'+
+ (p?'':'<p class="badge w">'+t+' accounts need administrator verification</p>')+
+ '<label>'+(c?'Clinic Name':'Full Name')+'</label><input id="rn"><label>Email Address</label><input id="re" type="email"><label>Contact Number</label><input id="rc">'+
+ '<label>Password</label><input id="rp" type="password"><label>Confirm Password</label><input id="rq" type="password">'+
+ (p?'<label>Date of Birth</label><input type="date"><label>Gender</label><select><option>Female</option><option>Male</option><option>Other</option></select>':'')+
+ (d?'<label>Medical Specialization</label><input><label>Medical Registration Number</label><input><label>Years of Experience</label><input type="number">':'')+
+ (c?'<label>Address</label><input><label>Registration Details</label><textarea rows="2"></textarea>':'')+
+ '<div id="er" class="err"></div><button class="btn p" style="width:100%;margin-top:14px" onclick="doReg()">Create Account</button></div>'}
+function doReg(){
+ var n=document.getElementById("rn").value.trim(),e=document.getElementById("re").value,p=document.getElementById("rp").value,q=document.getElementById("rq").value,m="";
+ if(n.length<2)m="Name is required";else if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e))m="Enter a valid email";
+ else if(p.length<8||!/[a-z]/.test(p)||!/[A-Z]/.test(p)||!/\d/.test(p)||!/[^A-Za-z0-9]/.test(p))m="Password needs 8+ chars with upper, lower, number and symbol";
+ else if(p!==q)m="Passwords do not match";
+ if(m){document.getElementById("er").textContent=m;return}
+ S.users.push({n:n,e:e,r:S.tab,a:true,v:S.tab=="patient"?"-":"pending"});enter(S.tab,n)}
+function enter(r,n){S.user={r:r,n:n||{patient:"Asha Rao",doctor:"Dr. Ravi Kumar",clinic:"City Care Clinic",admin:"Platform Admin"}[r]};S.sec="home";nav(r)}
+function logout(){S.user=null;nav("home")}
+function card(i,t,v,soon){return '<div class="card"><div class="ico">'+i+'</div>'+(soon?'<span class="badge g" style="float:right">Coming Soon</span>':'')+'<div class="mut">'+t+'</div><div class="num">'+(soon?"-":v)+'</div></div>'}
+function soon(t){return '<div class="card" style="text-align:center;padding:50px 20px"><div style="font-size:38px">⏳</div><span class="badge">Coming Soon</span><h2>'+t+'</h2><p class="mut">This feature belongs to an upcoming module. No fake data is shown.</p></div>'}
+function body(){
+ var u=S.user,s=S.sec||"home",r=u.r;
+ if(/^s\d$/.test(s))return soon(NAV[r].filter(function(x){return x[0]==s})[0][1]);
+ if(s=="home"){
+  var cs={patient:card("✅","Profile Completion","86%")+card("📁","Health Records","3")+card("📊","Previous Assessments","",1)+card("📅","Upcoming Consultations","",1),
+  doctor:card("🛡️","Verification","Approved")+card("👥","Authorized Patients","1")+card("📊","Assessments","",1)+card("📅","Consultations","",1),
+  clinic:card("🛡️","Verification","Pending")+card("🩺","Linked Doctors","1")+card("👥","Authorized Patients","",1)+card("📅","Appointments","",1),
+  admin:card("👥","Patients",S.users.filter(function(x){return x.r=="patient"}).length)+card("🩺","Doctors",S.users.filter(function(x){return x.r=="doctor"}).length)+card("🏥","Clinics",S.users.filter(function(x){return x.r=="clinic"}).length)+card("⏳","Pending Verification",S.users.filter(function(x){return x.v=="pending"}).length)}[r];
+  return '<h2>Welcome, '+esc(u.n)+'</h2><p class="mut">Here is your overview.</p><div class="grid">'+cs+'</div><div class="card" style="margin-top:16px"><b>Recent Activity</b><p class="mut">• Login · just now<br>• Profile viewed</p></div>'}
+ if(s=="profile")return '<h2>'+(r=="clinic"?"Clinic":"My")+' Profile</h2><div class="card"><label>'+(r=="clinic"?"Clinic Name":"Full Name")+'</label><input value="'+esc(u.n)+'"><label>Email</label><input value="demo@medassist.ai" disabled><label>Contact Number</label><input value="+91 98765 43210">'+(r=="doctor"?'<label>Specialization</label><input value="Cardiology"><label>Experience (years)</label><input value="8">':'')+(r=="patient"?'<label>Age</label><input value="28"><label>Gender</label><select><option>Female</option></select>':'')+'<p><button class="btn p" onclick="say(\'Profile saved (preview)\')">Save Changes</button></p></div>';
+ if(s=="health"||s=="patients"||s=="docs"){
+  if(s=="health")return '<h2>My Health Information</h2><div class="card"><b>Data Sharing & Consent</b><p class="mut">Choose which verified doctors can view your history.</p>'+Object.keys(S.consent).map(function(d){return '<p style="display:flex;justify-content:space-between;align-items:center"><span>🩺 '+d+'</span><button class="btn '+(S.consent[d]?'r':'')+'" onclick="S.consent[\''+d+'\']=!S.consent[\''+d+'\'];say(\'Consent updated\')">'+(S.consent[d]?'Revoke access':'Allow access')+'</button></p>'}).join('')+'</div>';
+  if(s=="docs")return '<h2>Doctor Management</h2><div class="card"><b>Dr. Ravi Kumar</b><br><span class="mut">Cardiology · 8 yrs</span></div>';
+  return '<h2>Authorized Patient Records</h2><div class="card"><b>Asha Rao</b> <span class="mut">28 yrs · female</span><p><span class="badge">Hypertension</span> <span class="badge w">Penicillin</span> <span class="badge g">Amlodipine 5mg</span></p></div>'}
+ if(s=="history")return '<h2>Medical History</h2><div class="card"><label>Existing Conditions</label><textarea rows="2">'+esc(S.hist.conditions)+'</textarea><label>Known Allergies</label><textarea rows="2">'+esc(S.hist.allergies)+'</textarea><label>Current Medications</label><textarea rows="2">'+esc(S.hist.meds)+'</textarea><label>Previous Medical Information</label><textarea rows="3" placeholder="Past surgeries, family history..."></textarea><p><button class="btn p" onclick="say(\'Medical history saved (preview)\')">Save History</button></p></div>';
+ if(s=="verify"&&r=="doctor")return '<h2>Verification Status</h2><div class="card"><span class="badge">approved</span><p class="mut">Registration: APMC-12345 · Specialization: Cardiology</p></div>';
+ if(s=="users"||s=="verify"||s=="roles"){
+  var rows=S.users.filter(function(x){return s!="verify"||x.v=="pending"});
+  return '<h2>'+(s=="users"?"Manage Users":s=="verify"?"Verify Doctors & Clinics":"Manage Roles")+'</h2><div class="card" style="overflow-x:auto">'+(rows.length?'<table><tr><th>User</th><th>Role</th><th>Status</th><th></th></tr>'+rows.map(function(x){var i=S.users.indexOf(x);return '<tr><td><b>'+esc(x.n)+'</b><br><span class="mut">'+esc(x.e)+'</span></td><td>'+x.r+'</td><td><span class="badge '+(x.a?'':'g')+'">'+(x.a?'active':'inactive')+'</span> '+(x.v!="-"?'<span class="badge '+(x.v=="approved"?'':'w')+'">'+x.v+'</span>':'')+'</td><td>'+
+   (s=="verify"?'<button class="btn t" onclick="S.users['+i+'].v=\'approved\';say(\'Approved\')">Approve</button> <button class="btn r" onclick="S.users['+i+'].v=\'rejected\';say(\'Rejected\')">Reject</button>':s=="roles"?'<select><option>'+x.r+'</option><option>admin</option></select>':'<button class="btn '+(x.a?'r':'t')+'" onclick="S.users['+i+'].a=!S.users['+i+'].a;say(\'Account updated\')">'+(x.a?'Deactivate':'Activate')+'</button>')+'</td></tr>'}).join('')+'</table>':'<p class="mut" style="text-align:center">Nothing waiting for verification.</p>')+'</div>'}
+ if(s=="log")return '<h2>Platform Activity</h2><div class="card"><p class="mut">• Admin approved Dr. Ravi Kumar<br>• New registration: Dr. Meera Nair<br>• New registration: City Care Clinic</p></div>';
+ if(s=="settings")return '<h2>Settings</h2><div class="card"><b>Change Password</b><label>Current Password</label><input type="password"><label>New Password</label><input type="password"><p><button class="btn p" onclick="say(\'Password updated (preview)\')">Update Password</button></p></div>';
+ return ''}
+function dash(){
+ var r=S.user.r,s=S.sec||"home";
+ return topbar()+'<div class="dash"><div class="side">'+NAV[r].map(function(x){return '<a class="'+(s==x[0]?'on':'')+'" onclick="S.sec=\''+x[0]+'\';draw()">'+x[1]+(x[2]?'<span class="badge g">Soon</span>':'')+'</a>'}).join('')+'</div><div class="main">'+body()+'</div></div>'}
+function draw(){
+ var h=location.hash.slice(1)||"home",v;
+ if(["patient","doctor","clinic","admin"].indexOf(h)>-1){if(!S.user||S.user.r!=h){h="login"}}
+ if(h=="home")v=home();else if(h=="login")v=login();else if(h=="register")v=reg();else v=dash();
+ document.getElementById("app").innerHTML=v+(S.toast?'<div class="toast">✓ '+esc(S.toast)+'</div>':'')}
+window.addEventListener("hashchange",function(){S.sec="home";draw()});draw();
+</script>
+</body>
+</html>
